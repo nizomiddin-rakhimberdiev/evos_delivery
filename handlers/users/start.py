@@ -21,3 +21,8 @@ async def cmd_start(message: types.Message):
 async def back_handler(message: types.Message, state: FSMContext):
     await state.finish()
     await message.answer(text='Выберите одно из следующих', reply_markup=menu[db.get_lng(message.from_user.id)])
+
+
+@dp.message_handler(commands=['nimadir'])
+async def nimadir(message: types.Message, state: FSMContext):
+    await message.answer('nimadir nimadir')
