@@ -13,6 +13,18 @@ menu = {
     ])
 }
 
+
+menu_btns = ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text=" 🗺 Мои адреса")],
+            [
+                KeyboardButton(text="📍Отправить геолокацию", request_location=True),
+                KeyboardButton(text="⬅️ Назад")
+            ]
+        ],
+        resize_keyboard=True
+    )
+
 contact_request = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, keyboard=[
     [KeyboardButton(text="📞 Мой номер", request_contact=True)],
     [KeyboardButton(text="⬅️ Назад")]

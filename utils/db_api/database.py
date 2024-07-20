@@ -16,6 +16,19 @@ class Database:
         )
         ''')
         self.con.commit()
+
+        self.cursor.execute('''
+        CREATE TABLE IF NOT EXISTS addresses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            chat_id INTEGER,
+            name VARCHAR(255),
+            latitude REAL,
+            longitude REAL,
+            FOREIGN KEY(chat_id) REFERENCES users(chat_id)
+        )
+        ''')
+
+    
         # self.con.close()
 
     def insert_user(self, chat_id):
@@ -54,6 +67,19 @@ class Database:
         print(result)
         # self.con.close()
         return result[0]
+
+
+    def add_address(self, user_id, name, latitude, longitude):
+        self.cursor.execute('INSERT INTO addresses (chat_id, name, latitude, longitude) VALUES (?,?,?,?)',(user_id, name, latitude, longitude))
+        self.con.commit()
+        # self.con.close()
+
+    def get_addresses(self, user_id):
+        self.cursor.execute('SELECT name, latitude, longitude FROM addresses WHERE chat_id =?',(user_id,))
+        addresses = self.cursor.fetchall()
+        # self.con.close()
+        return addresses
+
 
 
 
