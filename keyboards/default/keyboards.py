@@ -13,17 +13,52 @@ menu = {
     ])
 }
 
+geo_location = {
+    "ru": ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[
+        [KeyboardButton(text="🗺 Мои адреса")],
+        [KeyboardButton(text="📍 Отправить геолокацию", request_location=True), KeyboardButton(text="⬅️ Назад")]
+    ]),
+    "uz": ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[
+        [KeyboardButton(text="🗺 Mening manzillarim")],
+        [KeyboardButton(text="📍 Geolokatsiyani yuborish", request_location=True), KeyboardButton(text="⬅️ Ortga")]
+    ])
+}
 
-menu_btns = ReplyKeyboardMarkup(
-        keyboard=[
-            [KeyboardButton(text=" 🗺 Мои адреса")],
-            [
-                KeyboardButton(text="📍Отправить геолокацию", request_location=True),
-                KeyboardButton(text="⬅️ Назад")
-            ]
-        ],
-        resize_keyboard=True
-    )
+
+
+def create_location_buttons(locations, lang):
+    my_manzil = {
+        "ru": ReplyKeyboardMarkup(resize_keyboard=True, row_width=1),
+        "uz": ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    }
+
+    btns_ru = []
+    btns_uz = []
+
+    for location in locations:
+        print(location[0], location)
+        btns_ru.append(KeyboardButton(text=location[0]))
+        btns_uz.append(KeyboardButton(text=location[0]))
+
+    btns_ru.append(KeyboardButton(text="⬅️ Назад"))
+    btns_uz.append(KeyboardButton(text="⬅️ Ortga"))
+
+    my_manzil["ru"].add(*btns_ru)
+    my_manzil["uz"].add(*btns_uz)
+
+    return my_manzil[lang]
+
+
+confirm = {
+    "ru": ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[
+        [KeyboardButton(text="✅ Да"), KeyboardButton(text="❌ Нет")],
+        [KeyboardButton(text="⬅️ Назад")]
+    ]),
+    "uz": ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[
+        [KeyboardButton(text="✅ Ha"), KeyboardButton(text="❌ Yo'q")],
+        [KeyboardButton(text="⬅️ Ortga")]
+    ])
+}
 
 contact_request = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, keyboard=[
     [KeyboardButton(text="📞 Мой номер", request_contact=True)],

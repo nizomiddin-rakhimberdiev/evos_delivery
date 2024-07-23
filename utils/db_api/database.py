@@ -79,6 +79,13 @@ class Database:
         addresses = self.cursor.fetchall()
         # self.con.close()
         return addresses
+    
+
+    def check_language(self, chat_id):
+        self.cursor.execute("SELECT lang FROM users WHERE chat_id = ?", (chat_id,))
+        result = self.cursor.fetchone()
+        # print(result)
+        return result[0] if result else None
 
 
 
