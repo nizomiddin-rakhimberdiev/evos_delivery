@@ -15,8 +15,7 @@ class Database:
             contact VARCHAR(20)
         )
         ''')
-        self.con.commit()
-
+       
         self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS addresses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,6 +26,40 @@ class Database:
             FOREIGN KEY(chat_id) REFERENCES users(chat_id)
         )
         ''')
+
+        self.cursor.execute('''
+        CREATE TABLE IF NOT EXISTS categories(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name VARCHAR(255)
+            )
+                            ''')
+        
+
+        self.cursor.execute('''
+        CREATE TABLE IF NOT EXISTS products (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name VARCHAR(255),
+            price INTEGER,
+            description TEXT,
+            image TEXT,
+            category_id INTEGER,
+            FOREIGN KEY(category_id) REFERENCES categories(id)
+                            )''')
+        
+        self.cursor.execute('''
+        CREATE TABLE IF NOT EXISTS orders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            products VARCHAR(255),
+            total_price INTEGER,
+            user_id INTEGER,
+            phone_number VARCHAR(15),
+            address VARCHAR(255)
+                            )
+        ''')
+
+        self.con.commit()
+
+
 
     
         # self.con.close()

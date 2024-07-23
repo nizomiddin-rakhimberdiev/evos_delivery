@@ -1,4 +1,5 @@
 from loader import dp, db
+import datetime
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from keyboards.default.keyboards import create_location_buttons,  contact_request, back_button, menu, confirm, geo_location
@@ -41,10 +42,6 @@ async def confirm_address(message: types.Message):
     await AddressState.time.set()
 
 
-@dp.callback_query_handler(lambda c: c.data.startswith("now"), state=AddLocationState.time)
-async def set_time(c: types.CallbackQuery, state: FSMContext):
-    lang = c.data.split('_')[1]
-
 
 
 @dp.message_handler(lambda message: message.text in ["🗺 Мои адреса", "🗺 Mening manzillarim"], state="*")
@@ -63,6 +60,38 @@ async def adresa(message: types.Message, state: FSMContext):
         await message.answer("Yetkazib berish manzilni tanlang", reply_markup=reply_markup)
     await AddressState.address.set()
 
+
+@dp.message_handler(state=AddressState.address)
+async def set_address(message: types.Message, state:FSMContext):
+    address = message.text
+    chat_id = message.from_user.id
+    await state.update_data(address=address, chat_id=chat_id)
+    if db.check_language(message.from_user.id) == "uz":
+        await message.answer("<b>Yetkazib berish vaqtini tanlang</b>", parse_mode="HTML", reply_markup=vaqt[db.check_language(message.from_user.id)])
+        # await message.answer("<b>Kunduzgi menu 10:01 dan 06:30 gacha</b>", parse_mode="HTML")
+        # await message.answer("Bo'limni tanlang.")
+    else:
+        await message.answer("<b>Выберите время доставки</b>", parse_mode="HTML", reply_markup=vaqt[db.check_language(message.from_user.id)])
+        # await message.answer("<b>Меню Дневной с 10:01 до 06:30</b>", parse_mode="HTML")
+        # await message.answer("Выберите категорию.")
+    await AddressState.time.set()
+
+
+@dp.callback_query_handler(lambda c: c.data.startswith("now"), state=AddressState.time)
+async def set_time(call: types.CallbackQuery, state: FSMContext):
+    lang = call.data.split('_')[1]
+    chat_id = call.from_user.id
+    time = datetime.datetime.now()
+    await state.update_data(time=time)
+    if db.check_language(call.message.from_user.id) == "uz":
+        await call.message.answer("<b>Yetkazib berish vaqtini tanlang</b>", parse_mode="HTML", reply_markup=vaqt[db.check_language(message.from_user.id)])
+        # await message.answer("<b>Kunduzgi menu 10:01 dan 06:30 gacha</b>", parse_mode="HTML")
+        # await message.answer("Bo'limni tanlang.")
+    else:
+        await call.message.answer("<b>Выберите время доставки</b>", parse_mode="HTML", reply_markup=vaqt[db.check_language(message.from_user.id)])
+        # await message.answer("<b>Меню Дневной с 10:01 до 06:30</b>", parse_mode="HTML")
+        # await message.answer("Выберите категорию.")
+    await AddressState.time.set()
 
 
 
