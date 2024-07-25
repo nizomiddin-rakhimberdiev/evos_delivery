@@ -11,7 +11,10 @@ async def on_startup(dispatcher):
     await set_default_commands(dispatcher)
     print('ishladi')
     try:
+        
         db.create_table()
+        # db.delete_table()
+
     except Exception as e:
         print(f'Error in database setup: {e}')
     

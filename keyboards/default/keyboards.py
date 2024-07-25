@@ -103,3 +103,14 @@ language_btn = {
         resize_keyboard=True
     )
 }
+
+
+admin_menu = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton(text="Add category"),
+            KeyboardButton(text="Add product")
+        ]
+    ],
+    resize_keyboard=True
+)

@@ -30,7 +30,7 @@ class Database:
         self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS categories(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name VARCHAR(255)
+            name VARCHAR(255) UNIQUE
             )
                             ''')
         
@@ -38,7 +38,7 @@ class Database:
         self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name VARCHAR(255),
+            name VARCHAR(255) UNIQUE,
             price INTEGER,
             description TEXT,
             image TEXT,
@@ -62,6 +62,11 @@ class Database:
 
 
     
+        # self.con.close()
+
+    def add_category(self, category):
+        self.cursor.execute('INSERT INTO categories (name) VALUES (?)', (category,))
+        self.con.commit()
         # self.con.close()
 
     def insert_user(self, chat_id):
@@ -123,4 +128,11 @@ class Database:
 
 
 
-    
+    def delete_table(self):
+        # self.cursor.execute('DROP TABLE IF EXISTS users')
+        # self.cursor.execute('DROP TABLE IF EXISTS addresses')
+        self.cursor.execute('DROP TABLE IF EXISTS categories')
+        self.cursor.execute('DROP TABLE IF EXISTS products')
+        # self.cursor.execute('DROP TABLE IF EXISTS orders')
+        self.con.commit()
+        # self.con.close()

@@ -14,3 +14,17 @@ class AddLocationState(StatesGroup):
 class AddressState(StatesGroup):
     address  = State()
     time = State()
+
+
+class AddCategoryState(StatesGroup):
+    name = State()
+
+
+class AddProductState(StatesGroup):
+    name = State()
+    price = State()
+    description = State()
+    image = State()
+    category = State()
+    confirm = State()
+    
