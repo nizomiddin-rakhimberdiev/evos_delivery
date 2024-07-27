@@ -1,4 +1,5 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from loader import db
 
 vaqt = {
     'uz': InlineKeyboardMarkup(inline_keyboard=[
@@ -8,3 +9,16 @@ vaqt = {
         [InlineKeyboardButton(text="Сейчас", callback_data='now_ru'), InlineKeyboardButton(text="В другое время", callback_data='now_ru')]
     ])
 }
+
+
+
+
+async def get_catedories_btn():
+    categories = db.get_categories()
+    categories_btn = InlineKeyboardMarkup(row_width=2)
+    btns = []
+    print(categories)
+    for category in categories:
+        btns.append(InlineKeyboardButton(text=category[1], callback_data=f"category_{category[0]}"))
+    categories_btn.add(*btns)
+    return categories_btn

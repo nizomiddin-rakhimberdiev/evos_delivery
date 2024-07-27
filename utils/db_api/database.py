@@ -64,10 +64,22 @@ class Database:
     
         # self.con.close()
 
+    def add_product(self, name, price, description, image, category_id):
+        self.cursor.execute('INSERT INTO products (name, price, description, image, category_id) VALUES (?,?,?,?,?)', (name, price, description, image, category_id))
+        self.con.commit()
+        # self.con.close()
+
+
     def add_category(self, category):
         self.cursor.execute('INSERT INTO categories (name) VALUES (?)', (category,))
         self.con.commit()
+        # self.con.close()    
+
+    def get_categories(self):
+        self.cursor.execute('SELECT * FROM categories')
+        categories = self.cursor.fetchall()
         # self.con.close()
+        return categories
 
     def insert_user(self, chat_id):
         self.cursor.execute('INSERT INTO users (chat_id,lang) VALUES (?, ?)', (chat_id,"ru"))
