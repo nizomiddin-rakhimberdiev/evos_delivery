@@ -1,4 +1,5 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from loader import db
 
 menu = {
     'ru': ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[
@@ -114,3 +115,24 @@ admin_menu = ReplyKeyboardMarkup(
     ],
     resize_keyboard=True
 )
+
+
+async def get_categories_btn():
+    categories = db.get_categories()
+    categories_btn = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+    btns = []
+    print(categories)
+    for category in categories:
+        btns.append(KeyboardButton(text=category[1]))
+    categories_btn.add(*btns)
+    return categories_btn
+
+
+async def get_products_btn(category_name):
+    products = db.get_products(category_name)
+    products_btn = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+    btns = []
+    for product in products:
+        btns.append(KeyboardButton(text=product[0]))
+    products_btn.add(*btns)
+    return products_btn

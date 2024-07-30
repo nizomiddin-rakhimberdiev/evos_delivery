@@ -42,7 +42,7 @@ class Database:
             price INTEGER,
             description TEXT,
             image TEXT,
-            category_id INTEGER,
+            category_id INTEGER, 
             FOREIGN KEY(category_id) REFERENCES categories(id)
                             )''')
         
@@ -138,13 +138,21 @@ class Database:
         return result[0] if result else None
 
 
+    def get_products(self, category_name):
+        self.cursor.execute("SELECT id FROM categories WHERE name = ?", (category_name,))
+        category_id = self.cursor.fetchone()[0]
+        self.cursor.execute("SELECT name FROM products WHERE category_id = ?", (category_id,))
+        products = self.cursor.fetchall()
+        return products
+
+    def get_product(self, name):
+        self.cursor.execute("SELECT * FROM products WHERE name = ?", (name,))
+        product = self.cursor.fetchall()
+        # self.con.close()
+        return product
 
 
     def delete_table(self):
-        # self.cursor.execute('DROP TABLE IF EXISTS users')
-        # self.cursor.execute('DROP TABLE IF EXISTS addresses')
-        self.cursor.execute('DROP TABLE IF EXISTS categories')
         self.cursor.execute('DROP TABLE IF EXISTS products')
-        # self.cursor.execute('DROP TABLE IF EXISTS orders')
         self.con.commit()
         # self.con.close()

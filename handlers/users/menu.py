@@ -2,7 +2,7 @@ from loader import dp, db
 import datetime
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from keyboards.default.keyboards import create_location_buttons,  contact_request, back_button, menu, confirm, geo_location
+from keyboards.default.keyboards import create_location_buttons,  contact_request, back_button, menu, confirm, geo_location, get_categories_btn, get_products_btn
 from keyboards.inline.inline_keyboards import  vaqt
 from states.all_states import AddLocationState, AddressState
 from utils.db_api.apis import get_address_from_coordinates
@@ -84,15 +84,31 @@ async def set_time(call: types.CallbackQuery, state: FSMContext):
     time = datetime.datetime.now()
     await state.update_data(time=time)
     if db.check_language(call.message.from_user.id) == "uz":
-        await call.message.answer("<b>Yetkazib berish vaqtini tanlang</b>", parse_mode="HTML", reply_markup=vaqt[db.check_language(message.from_user.id)])
+        await call.message.answer("<b>Kategoriyalardan birini tanlang</b>", parse_mode="HTML", reply_markup=await get_categories_btn())
         # await message.answer("<b>Kunduzgi menu 10:01 dan 06:30 gacha</b>", parse_mode="HTML")
         # await message.answer("Bo'limni tanlang.")
     else:
-        await call.message.answer("<b>Выберите время доставки</b>", parse_mode="HTML", reply_markup=vaqt[db.check_language(message.from_user.id)])
+        await call.message.answer("<b>Выберите время доставки</b>", parse_mode="HTML", reply_markup=await get_categories_btn())
         # await message.answer("<b>Меню Дневной с 10:01 до 06:30</b>", parse_mode="HTML")
         # await message.answer("Выберите категорию.")
-    await AddressState.time.set()
+    await AddressState.category.set()
 
 
 
+@dp.message_handler(state=AddressState.category)
+async def set_category(message: types.Message, state: FSMContext):
+    category_name = message.text
+    await message.answer("Productlardan birini tanlang: ", reply_markup=await get_products_btn(category_name))
+    await AddressState.product.set()
 
+
+@dp.message_handler(state=AddressState.product)
+async def get_products_handler(message: types.Message, state: FSMContext):
+    product_name = message.text
+    data = db.get_product(product_name)
+    image = data[0][4]
+    description = data[0][3]
+    price = data[0][2]
+    caption = f"{description}\n\nNarxi: {price} 000"
+    await message.answer_photo(photo="https://media.express24.uz/r/600/600/OZpGZ7bkt6pXPFINvsIZq.jpg", caption=caption)
+    

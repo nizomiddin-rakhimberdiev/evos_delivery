@@ -4,7 +4,7 @@ from data.config import ADMINS
 from aiogram import types
 from aiogram.dispatcher.filters import BoundFilter
 from keyboards.default.keyboards import admin_menu
-from states.all_states import AddCategoryState, AddProductState
+from states.all_states import AddCategoryState, AddProductState, GetProductsState
 from aiogram.dispatcher import FSMContext
 from keyboards.inline.inline_keyboards import get_catedories_btn
 
@@ -91,3 +91,20 @@ async def process_product_category(call: types.CallbackQuery, state: FSMContext)
         await call.message.answer(f"Product {name} qo'shildi")
         await state.finish()
     
+
+
+@dp.message_handler(text="Get products")
+async def get_products(message: types.Message):
+    await message.answer('Categoriyalardan birini tanlang', reply_markup=await get_catedories_btn())
+    await GetProductsState.category.set()
+
+
+
+@dp.callback_query_handler(lambda c: c.data.startswith('category_'), state=GetProductsState.category)
+async def get_catedories_btn(call: types.CallbackQuery, state: FSMContext):
+    category_id = call.data.split('_')[1]
+    products = db.get_products(category_id)
+    for product in products:
+        btn = types.InlineKeyboardButton(text=product['name'], callback_data=f'product_{product["id"]}')
+
+    await call.message.answer('Productlar:', reply_markup=reply_markup)

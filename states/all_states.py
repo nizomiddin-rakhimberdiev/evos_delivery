@@ -14,6 +14,8 @@ class AddLocationState(StatesGroup):
 class AddressState(StatesGroup):
     address  = State()
     time = State()
+    category = State()
+    product = State()
 
 
 class AddCategoryState(StatesGroup):
@@ -28,3 +30,7 @@ class AddProductState(StatesGroup):
     category = State()
     confirm = State()
     
+
+class GetProductsState(StatesGroup):
+    category = State()
+    product = State()
