@@ -57,9 +57,21 @@ class Database:
                             )
         ''')
 
+        self.cursor.execute('''
+        CREATE TABLE IF NOT EXISTS basket (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            product_name VARCHAR(255),
+            count INTEGER,
+            total_price INTEGER)
+                            ''')
+
         self.con.commit()
 
 
+    def add_basket(self, user_id, product_name, count, total_price):
+        self.cursor.execute('INSERT INTO basket (user_id, product_name, count, total_price) VALUES (?,?,?,?)', (user_id, product_name, count, total_price))
+        self.con.commit()
 
     
         # self.con.close()
@@ -150,6 +162,18 @@ class Database:
         product = self.cursor.fetchall()
         # self.con.close()
         return product
+    
+    def get_product_name(self, product_id):
+        self.cursor.execute("SELECT name FROM products WHERE id =?", (product_id,))
+        product_name = self.cursor.fetchone()[0]
+        # self.con.close()
+        return product_name
+    
+    def get_product_price(self, product_id):
+        self.cursor.execute("SELECT price FROM products WHERE id =?", (product_id,))
+        product_name = self.cursor.fetchone()[0]
+        # self.con.close()
+        return product_name
 
 
     def delete_table(self):

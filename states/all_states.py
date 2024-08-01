@@ -16,6 +16,7 @@ class AddressState(StatesGroup):
     time = State()
     category = State()
     product = State()
+    basket = State()
 
 
 class AddCategoryState(StatesGroup):

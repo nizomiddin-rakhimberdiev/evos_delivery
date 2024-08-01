@@ -8,8 +8,9 @@ from loader import dp, db
 
     
 
-@dp.message_handler(CommandStart())
-async def cmd_start(message: types.Message):
+@dp.message_handler(CommandStart(), state="*")
+async def cmd_start(message: types.Message, state: FSMContext):
+    await state.finish()
     print('start')
     if message.from_user.id not in db.all_chat_id():
         db.insert_user(message.from_user.id)

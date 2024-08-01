@@ -1,11 +1,14 @@
-from loader import dp, db
+from loader import dp, db, bot
 import datetime
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from keyboards.default.keyboards import create_location_buttons,  contact_request, back_button, menu, confirm, geo_location, get_categories_btn, get_products_btn
-from keyboards.inline.inline_keyboards import  vaqt
+from keyboards.inline.inline_keyboards import  vaqt, get_basket_keyboard
 from states.all_states import AddLocationState, AddressState
 from utils.db_api.apis import get_address_from_coordinates
+
+
+user_data = {}
 
 @dp.message_handler(text="🍴 Меню")
 async def geo(message: types.Message):
@@ -110,5 +113,48 @@ async def get_products_handler(message: types.Message, state: FSMContext):
     description = data[0][3]
     price = data[0][2]
     caption = f"{description}\n\nNarxi: {price} 000"
-    await message.answer_photo(photo="https://media.express24.uz/r/600/600/OZpGZ7bkt6pXPFINvsIZq.jpg", caption=caption)
+
+    product_id = data[0][0]
+    count = user_data.get(message.from_user.id, {}).get(product_id, 1)
+
+    keyboard = await get_basket_keyboard(product_id, count)
+    await message.answer_photo(photo=image, caption=caption, reply_markup=keyboard)
     
+    
+
+
+@dp.callback_query_handler(lambda c: c.data and c.data.startswith(('increment', 'decrement', 'add_to_cart')), state='*')
+async def process_callback(callback_query: types.CallbackQuery):
+    action, product_id = callback_query.data.split(':')
+    user_id = callback_query.from_user.id
+    print(user_id, 'knopkani bosdi')
+    if user_id not in user_data:
+        user_data[user_id] = {}
+    if product_id not in user_data[user_id]:
+        user_data[user_id][product_id] = 1
+    
+    if action == 'increment':
+        user_data[user_id][product_id] += 1
+    elif action == 'decrement' and user_data[user_id][product_id] > 1:
+        user_data[user_id][product_id] -= 1
+    elif action == 'add_to_cart':
+        product_name = db.get_product_name(product_id)
+        price = db.get_product_price(product_id)
+        count = user_data[user_id][product_id]
+        total_price = int(price) * count
+        db.add_basket(user_id, product_name, count, total_price)
+        await bot.send_message(
+            callback_query.from_user.id,
+            f"{product_name} ({count} x {price} so'm) savatchaga qo'shildi. Jami: {total_price} so'm"
+        )
+        return
+    
+    count = user_data[user_id][product_id]
+    keyboard = await get_basket_keyboard(product_id, count)
+    await bot.edit_message_reply_markup(
+        callback_query.message.chat.id, 
+        callback_query.message.message_id, 
+        reply_markup=keyboard
+    )
+    await bot.answer_callback_query(callback_query.id)
+
