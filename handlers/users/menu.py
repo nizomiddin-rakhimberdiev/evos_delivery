@@ -10,10 +10,29 @@ from utils.db_api.apis import get_address_from_coordinates
 
 user_data = {}
 
+
+@dp.message_handler(lambda message: message.text == "Savat", state='*')
+async def get_basket(message: types.Message):
+    user_id = message.from_user.id
+    basket = db.get_my_basket(user_id)
+    total_price = 0
+    text = f""
+    for b in basket:
+        text += f"{b[1]} {b[0]}\n"
+        total_price += b[2]
+
+    text += f"Mahsulotlar: {total_price} so'm\n"
+    text += "Yetkazib berish: 12 000 so'm\n"
+    text += f"Jami: {total_price + 12000}"
+
+    await message.answer(text)
+
 @dp.message_handler(text="🍴 Меню")
 async def geo(message: types.Message):
     await message.answer("Отправьте 📍 геолокацию или выберите адрес доставки", reply_markup=geo_location[db.check_language(message.from_user.id)])
     await AddLocationState.location.set()
+
+
 
 
 @dp.message_handler(content_types=types.ContentType.LOCATION, state=AddLocationState.location)
@@ -141,7 +160,7 @@ async def process_callback(callback_query: types.CallbackQuery):
         product_name = db.get_product_name(product_id)
         price = db.get_product_price(product_id)
         count = user_data[user_id][product_id]
-        total_price = int(price) * count
+        total_price = int(price) * count * 1000
         db.add_basket(user_id, product_name, count, total_price)
         await bot.send_message(
             callback_query.from_user.id,
@@ -158,3 +177,7 @@ async def process_callback(callback_query: types.CallbackQuery):
     )
     await bot.answer_callback_query(callback_query.id)
 
+
+
+
+    

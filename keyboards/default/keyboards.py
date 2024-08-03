@@ -131,6 +131,7 @@ async def get_categories_btn():
 async def get_products_btn(category_name):
     products = db.get_products(category_name)
     products_btn = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+    products_btn.add(KeyboardButton(text="Savat"))
     btns = []
     for product in products:
         btns.append(KeyboardButton(text=product[0]))

@@ -174,6 +174,23 @@ class Database:
         product_name = self.cursor.fetchone()[0]
         # self.con.close()
         return product_name
+    
+    def get_my_basket(self, user_id):
+        self.cursor.execute("SELECT product_name, count, total_price FROM basket WHERE user_id =?", (user_id,))
+        basket = self.cursor.fetchall()
+        # self.con.close()
+        return basket
+
+    def add_order(self, products, total_price, user_id, phone_number, address):
+        self.cursor.execute('INSERT INTO orders (products, total_price, user_id, phone_number, address) VALUES (?,?,?,?,?)', (products, total_price, user_id, phone_number, address))
+        self.con.commit()
+        # self.con.close()
+
+    def get_orders(self):
+        self.cursor.execute('SELECT * FROM orders ORDER BY id DESC')
+        orders = self.cursor.fetchall()
+        # self.con.close()
+        return orders
 
 
     def delete_table(self):
